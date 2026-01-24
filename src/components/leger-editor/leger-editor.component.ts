@@ -42,12 +42,12 @@ import { ReportService } from '../../services/report.service';
             </div>
          </div>
          <div class="text-[10px] text-green-600 italic text-right max-w-xs">
-           *Jika terhubung, capaian kompetensi akan terisi otomatis saat nama mapel diketik.
+           *Otomatis mengisi deskripsi jika Database tersedia atau Nilai diisi.
          </div>
       </div>
     </div>
     
-    <!-- INFO KHUSUS GURU MAPEL (NEW LABEL) -->
+    <!-- INFO KHUSUS GURU MAPEL -->
     @if (isGuruMapel()) {
        <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-900 p-4 mb-4 rounded-r shadow-sm animate-fade-in" role="alert">
          <div class="flex items-center gap-3">
@@ -87,7 +87,7 @@ import { ReportService } from '../../services/report.service';
                 <div class="grid grid-cols-[30px_1fr_90px_1fr_40px] gap-2 items-start p-2 rounded hover:bg-gray-50 group border-b border-gray-100 last:border-0">
                     <span class="text-gray-400 font-semibold text-xs mt-2 text-center">{{ i + 1 }}.</span>
                     
-                    <!-- Nama Mapel: Hanya Wali Kelas yang bisa edit nama -->
+                    <!-- Nama Mapel -->
                     <div>
                         <input type="text" class="form-input font-medium" placeholder="Nama Mapel" 
                             [(ngModel)]="sub.name" 
@@ -95,7 +95,7 @@ import { ReportService } from '../../services/report.service';
                             [disabled]="isGuruMapel()"> 
                     </div>
 
-                    <!-- Nilai: Wali Kelas OR Guru Mapel (jika mapelnya sesuai) -->
+                    <!-- Nilai -->
                     <div>
                         <input type="number" class="form-input text-center font-bold" placeholder="0" 
                             [(ngModel)]="sub.score" 
@@ -103,9 +103,9 @@ import { ReportService } from '../../services/report.service';
                             [disabled]="isGuruMapel() && !reportService.canEditSubject(sub.name)">
                     </div>
 
-                    <!-- Capaian: Wali Kelas OR Guru Mapel (jika mapelnya sesuai) -->
+                    <!-- Capaian -->
                     <div>
-                        <textarea class="form-input text-xs min-h-[40px]" placeholder="Capaian Kompetensi..." 
+                        <textarea class="form-input text-xs min-h-[40px]" placeholder="Capaian Kompetensi... (Otomatis jika kosong)" 
                             [(ngModel)]="sub.competency" 
                             (ngModelChange)="onFormChange()" 
                             [disabled]="isGuruMapel() && !reportService.canEditSubject(sub.name)"></textarea>
@@ -158,7 +158,7 @@ import { ReportService } from '../../services/report.service';
 
                     <!-- Capaian -->
                     <div>
-                        <textarea class="form-input text-xs min-h-[40px]" placeholder="Capaian Kompetensi..." 
+                        <textarea class="form-input text-xs min-h-[40px]" placeholder="Capaian Kompetensi... (Otomatis jika kosong)" 
                             [(ngModel)]="sub.competency" 
                             (ngModelChange)="onFormChange()" 
                             [disabled]="isGuruMapel() && !reportService.canEditSubject(sub.name)"></textarea>
@@ -363,12 +363,13 @@ export class LegerEditorComponent {
       });
     });
 
-    // 2. Aggressive Auto-Fill Watcher
+    // 2. Aggressive Auto-Fill Watcher with Fallback
     effect(() => {
         const s = this.editableStudent();
-        const masterData = this.reportService.masterCompetencies();
+        // Trigger effect by reading signal, but logic handles empty DB too
+        const masterData = this.reportService.masterCompetencies(); 
         
-        if (!s || masterData.length === 0) return;
+        if (!s) return;
 
         untracked(() => {
             let hasChanges = false;
@@ -378,7 +379,16 @@ export class LegerEditorComponent {
                     const isEmpty = !sub.competency || sub.competency.trim() === '' || sub.competency.trim() === '-';
                     
                     if (isEmpty) {
-                        const desc = this.reportService.getCompetencyForSubject(sub.name);
+                        // 1. Try DB
+                        let desc = this.reportService.getCompetencyForSubject(sub.name);
+                        
+                        // 2. Fallback: Generate based on score if DB is empty/miss but Score exists
+                        if (!desc && sub.score && Number(sub.score) > 0) {
+                           const val = Number(sub.score);
+                           const pred = val >= 90 ? 'sangat baik' : val >= 80 ? 'baik' : val >= 75 ? 'cukup' : 'perlu bimbingan';
+                           desc = `Menunjukkan penguasaan kompetensi yang ${pred} dalam pembelajaran ${sub.name}.`;
+                        }
+
                         if (desc) {
                             sub.competency = desc;
                             hasChanges = true;

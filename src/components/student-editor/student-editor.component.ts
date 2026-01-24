@@ -151,6 +151,23 @@ import { Student } from '../../types';
                   <label class="label">No Telp Ortu</label>
                   <input type="text" class="form-input" [(ngModel)]="student.telpOrangTua" name="telpOrangTua" (ngModelChange)="onFormChange()">
               </div>
+              
+              <!-- TANDA TANGAN SECTION (Fixes the dots issue) -->
+              <div class="col-span-2 pt-4 border-t border-gray-200 mt-2 bg-yellow-50 p-3 rounded">
+                  <div class="flex justify-between items-end mb-1">
+                      <label class="label text-yellow-800">Nama Orang Tua (Tanda Tangan Rapor)</label>
+                      <button (click)="copyFatherName()" type="button" class="text-[10px] text-blue-600 hover:underline font-bold flex items-center gap-1">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg>
+                        Salin dari Nama Ayah
+                      </button>
+                  </div>
+                  <input type="text" class="form-input font-bold border-yellow-300 focus:border-yellow-500 focus:ring-yellow-200" 
+                         [(ngModel)]="student.parentName" 
+                         name="parentName" 
+                         (ngModelChange)="onFormChange()"
+                         placeholder="Wajib diisi agar tidak muncul titik-titik di rapor">
+              </div>
+
             </fieldset>
             
             <fieldset class="space-y-4 p-4 border rounded">
@@ -223,6 +240,15 @@ export class StudentEditorComponent {
     const currentData = this.editableStudent();
     if (currentData) {
       this.studentChange.emit(currentData);
+    }
+  }
+
+  // New Helper Function to fix the dots issue quickly
+  copyFatherName() {
+    const s = this.editableStudent();
+    if (s) {
+       s.parentName = s.namaAyah;
+       this.onFormChange();
     }
   }
 
