@@ -79,7 +79,7 @@ import { ReportService } from '../../services/report.service';
   template: `
     <div class="w-full min-h-full h-auto text-black font-serif print-text relative flex flex-col p-8 sm:p-0">
       
-<!-- COVER PAGE -->
+<!-- SAMPUL RAPOR -->
         @if (viewMode() === 'cover') {
           <div class="paper-document bg-white w-[210mm] min-h-[297mm] p-8 shadow-2xl print:shadow-none print:w-full flex flex-col items-center justify-around text-black font-serif text-center relative print:mx-auto">
             
