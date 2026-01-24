@@ -1,0 +1,99 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <title>E-Rapor SMKN 1 Mondokan</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <!-- Menggunakan html2canvas standalone karena kita melakukan manual slicing -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <!-- Menambahkan jspdf secara eksplisit untuk manual generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'rapor-green': '#4a7c36',
+            'rapor-dark': '#2e5220',
+          },
+          screens: {
+            'print': {'raw': 'print'},
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @media print {
+      @page {
+        size: A4;
+        margin: 0; 
+      }
+      
+      html, body {
+        width: 210mm;
+        height: auto !important;
+        background-color: white !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        overflow: visible !important;
+      }
+
+      /* Utility untuk menyembunyikan elemen saat cetak */
+      .no-print {
+        display: none !important;
+      }
+
+      /* Pastikan Layout Cetak Selalu Tampil */
+      app-print-layout {
+        display: block !important;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        visibility: visible !important;
+      }
+
+      /* Paksa Page Break */
+      .page-break {
+        page-break-before: always;
+      }
+      .break-inside-avoid {
+        page-break-inside: avoid;
+      }
+      
+      /* Paksa Text Hitam Murni */
+      p, h1, h2, h3, h4, h5, h6, span, div, td, th {
+        color: #000000 !important;
+      }
+    }
+  </style>
+<script type="importmap">
+{
+  "imports": {
+    "rxjs": "https://esm.sh/rxjs@^7.8.2?conditions=es2015",
+    "rxjs/operators": "https://esm.sh/rxjs@^7.8.2/operators?conditions=es2015",
+    "rxjs/ajax": "https://esm.sh/rxjs@^7.8.2/ajax?conditions=es2015",
+    "rxjs/webSocket": "https://esm.sh/rxjs@^7.8.2/webSocket?conditions=es2015",
+    "rxjs/testing": "https://esm.sh/rxjs@^7.8.2/testing?conditions=es2015",
+    "rxjs/fetch": "https://esm.sh/rxjs@^7.8.2/fetch?conditions=es2015",
+    "@angular/core": "https://esm.sh/@angular/core@20.2.2?external=rxjs",
+    "@angular/platform-browser": "https://esm.sh/@angular/platform-browser@20.2.2?external=rxjs",
+    "@angular/compiler": "https://esm.sh/@angular/compiler@20.2.2?external=rxjs",
+    "@angular/common": "https://esm.sh/@angular/common@20.2.2?external=rxjs",
+    "@angular/forms": "https://esm.sh/@angular/forms@20.2.2?external=rxjs"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body class="bg-gray-100 text-sm text-gray-900">
+  <app-root></app-root>
+</body>
+</html>
